@@ -11,19 +11,17 @@ const TOKEN = process.env.PUTASSET_TOKEN;
 
 const argv = process.argv;
 const args = require('minimist')(argv.slice(2), {
-    string: ['repo', 'owner', 'tag', 'filename', 'token'],
-    boolean: ['loud'],
+    string: ['repo', 'owner', 'tag', 'filename', 'token' ],
+    boolean: ['loud', 'force' ],
     alias: {
         v: 'version',
         h: 'help',
         r: 'repo',
-        u: 'owner',
-        user: 'owner',
         o: 'owner',
         t: 'tag',
         f: 'filename',
         l: 'loud',
-        tn: 'token'
+        k: 'token'
     }
 });
 
@@ -47,12 +45,14 @@ function main() {
     const repo = args.repo;
     const owner = args.owner;
     const tag = args.tag;
-    const filename = path.join(process.cwd(), args.filename);
+    const filename = path.isAbsolute(args.filename) ?
+        args.filename :
+        path.join(process.cwd(), args.filename);
     const name = args.filename;
-    
+
     if (args.loud)
         console.log(`Uploading file "${name}" to ${owner}/${repo}@${tag}`);
-    
+
     let token;
     const [e] = tryCatch(() => {
         check([
@@ -61,25 +61,36 @@ function main() {
             tag,
             name,
         ], [
-            'repo',
-            'owner',
-            'tag',
-            'filename'
-        ]);
-         
+                'repo',
+                'owner',
+                'tag',
+                'filename'
+            ]);
+
         token = TOKEN || args.token || readjson.sync(tokenPath).token;
     });
-    
-    
-    if (e)
-        return log(e);
-    
+
+
+    if (e){
+        log(e);
+        
+        process.exit(1);
+    }
+
     putasset(token, {
         repo,
         owner,
         tag,
         filename,
-    }).catch(log);
+        'force': args.force
+    }).catch(error=> {
+
+        log(error);
+
+        process.exit(1);
+
+    }).then(dl_url => console.log(dl_url));
+
 }
 
 function exit(error) {
@@ -103,11 +114,11 @@ function info() {
 function help() {
     const bin = require('../help');
     const usage = `Usage: ${info().name} [options]`;
-        
+
     console.log(usage);
     console.log('Options:');
-    
-    Object.keys(bin).forEach(function(name) {
+
+    Object.keys(bin).forEach(function (name) {
         console.log(`  ${name} ${bin[name]}`);
     });
 }

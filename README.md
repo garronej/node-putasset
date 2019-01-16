@@ -15,16 +15,17 @@ npm i putasset -g
 $ putasset
 Usage: putasset [options]
 Options:
-  -h, --help      : display this help and exit,
-  -v, --version   : output version information and exit,
-  -r, --repo      : name of repository,
-  -o, --owner     : owner of repository,
-  -t, --tag       : tag of repository (shoul exist!),
-  -f, --filename  : path to asset
-  -tn, --token    : github token <https://github.com/settings/tokens/new>
-  -l, --loud      : output filename, owner, repo and tag before upload
+  -h, --help      display this help and exit
+  -v, --version   output version information and exit
+  -r, --repo      name of repository
+  -o, --owner     owner of repository
+  -t, --tag       tag of repository (should exist!)
+  -f, --file      path to asset
+  -k, --token    github token <https://github.com/settings/tokens/new>
+  -l, --loud      output filename, repo, owner and tag before upload
+  --force         If asset with same name already exist overwrite it
 
-$ putasset -tn "token from url" \
+$ putasset -k "token from url" \
 -r putasset -o coderaiser -t v1.0.0 \
 -f "release.zip"
 ```
