@@ -79,7 +79,8 @@ function main() {
         owner,
         tag,
         filename,
-    }).catch(log);
+    }).catch(log).then(dl_url=> console.log(dl_url));
+
 }
 
 function exit(error) {
